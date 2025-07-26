@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <title>Get Your Daily Access Key</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 40px;
+            background: #121212;
+            color: #ffffff;
+            text-align: center;
+        }
+
+        .box {
+            background: #1e1e1e;
+            border-radius: 10px;
+            padding: 20px;
+            margin: auto;
+            max-width: 600px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.6);
+        }
+
+        h1 {
+            color: #00ffcc;
+        }
+
+        .key {
+            font-size: 1.2rem;
+            color: #00ffcc;
+            word-break: break-all;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="box">
+        <h1>🔑 Today's Access Key</h1>
+        <p>Copy this and paste it into your app:</p>
+        <div id="daily-key" class="key">Loading...</div>
+        <p style="margin-top:30px; font-size: 0.9rem; color: gray;">This key updates daily based on your device's date.
+        </p>
+    </div>
+
+    <script>
+        async function getDailyKey(secretSalt) {
+            const today = new Date().toISOString().slice(0, 10); // YYYY-MM-DD
+            const input = secretSalt + today;
+            const encoder = new TextEncoder();
+            const data = encoder.encode(input);
+            const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+            const hashArray = Array.from(new Uint8Array(hashBuffer));
+            const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+            document.getElementById('daily-key').textContent = hashHex;
+        }
+
+        // Replace with your real salt (same one in your app!)
+        const SECRET_SALT = "ChangeThisSecretSalt";
+        getDailyKey(SECRET_SALT);
+    </script>
+</body>
+
+</html>
